@@ -29,6 +29,12 @@ A transition defines how the system moves from one state to another in response 
 ### Entity
 An entity is something being tracked by the FSM. Each entity maintains its own state independently.
 
+## Installation
+
+```bash
+go get github.com/tendant/simple-fsm
+```
+
 ## Quick Start
 
 ```go
@@ -38,7 +44,8 @@ import (
     "context"
     "fmt"
     "log"
-    "simple-fsm"
+
+    fsm "github.com/tendant/simple-fsm"
 )
 
 func main() {

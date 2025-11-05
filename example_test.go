@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"simple-fsm"
+	fsm "github.com/tendant/simple-fsm"
 )
 
 func Example() {

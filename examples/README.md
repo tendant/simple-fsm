@@ -65,7 +65,8 @@ package main
 import (
     "context"
     "log"
-    "simple-fsm"
+
+    fsm "github.com/tendant/simple-fsm"
 )
 
 func main() {

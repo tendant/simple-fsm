@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"simple-fsm"
+	fsm "github.com/tendant/simple-fsm"
 )
 
 func main() {
