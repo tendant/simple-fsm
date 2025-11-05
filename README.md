@@ -135,9 +135,63 @@ In-memory storage for testing and simple use cases:
 storage := fsm.NewMemoryStorage()
 ```
 
+### PostgreSQL Storage
+
+Production-ready PostgreSQL storage backend:
+
+```go
+// Create PostgreSQL storage
+storage, err := fsm.NewPostgresStorage(ctx, "postgres://user:password@localhost:5432/mydb")
+if err != nil {
+    log.Fatal(err)
+}
+defer storage.Close()
+
+// Use with FSM
+machine, err := fsm.New(states, events, transitions, storage)
+```
+
+**Setup:**
+
+1. Run the migration to create the required table using [goose](https://github.com/pressly/goose):
+```bash
+# Install goose
+go install github.com/pressly/goose/v3/cmd/goose@latest
+
+# Run migration
+goose -dir migrations postgres "your-connection-string" up
+```
+
+Or manually run the SQL from `migrations/20251104220000_create_entity_state_transition.sql`:
+```sql
+CREATE TABLE entity_state_transition (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'utc'),
+    entity_type VARCHAR(255) NOT NULL,
+    entity_id VARCHAR(255) NOT NULL,
+    from_state VARCHAR(255),
+    to_state VARCHAR(255) NOT NULL,
+    event VARCHAR(255) NOT NULL,
+    created_by VARCHAR(255)
+);
+-- Plus indexes (see migration file for complete SQL)
+```
+
+2. Install the PostgreSQL driver:
+```bash
+go get github.com/jackc/pgx/v5
+```
+
+3. See `examples/postgres_example.go` for a complete working example.
+
+**Connection String Format:**
+```
+postgres://username:password@host:port/database?options
+```
+
 ### Custom Storage
 
-Implement the `Storage` interface for custom backends (database, cache, etc.):
+Implement the `Storage` interface for custom backends (Redis, DynamoDB, etc.):
 
 ```go
 type Storage interface {
@@ -157,6 +211,17 @@ go test -v
 Run with coverage:
 ```bash
 go test -cover
+```
+
+Run PostgreSQL integration tests (requires PostgreSQL connection):
+```bash
+# Set connection string
+export POSTGRES_TEST_CONN="postgres://user:password@localhost:5432/fsm_test"
+
+# Run all tests including PostgreSQL
+go test -v
+
+# PostgreSQL tests are automatically skipped if POSTGRES_TEST_CONN is not set
 ```
 
 ## Design Principles
